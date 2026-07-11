@@ -55,7 +55,6 @@
         .close-reader { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: var(--navy); font-weight: bold; }
         .btn-repo-large { display: block; margin-top: 20px; padding: 12px; background: var(--navy); color: white; text-align: center; text-decoration: none; border-radius: 5px; font-weight: bold; }
 
-        /* GESTOR DE CAPAS INTERNO */
         .layer-manager { background: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
         .layer-manager h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--navy); border-bottom: 1px solid #ddd; padding-bottom: 5px;}
         .sublayer-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
@@ -77,10 +76,10 @@
             </div>
 
             <div class="filter-section">
-                <label>Año de publicación:</label><select id="filter-anio"><option value="">Cargando...</option></select>
-                <label>Área de estudio:</label><select id="filter-sector"><option value="">Cargando...</option></select>
+                <label>Año de publicación:</label><select id="filter-anio" disabled><option value="">Esperando BD...</option></select>
+                <label>Área de estudio:</label><select id="filter-sector" disabled><option value="">Esperando BD...</option></select>
             </div>
-            <div id="tesis-lista">Iniciando motor de base de datos...</div>
+            <div id="tesis-lista" style="padding:20px; font-weight:bold; color:var(--navy);">Iniciando motor de base de datos...</div>
         </aside>
 
         <div id="map"></div>
@@ -92,7 +91,7 @@
     </div>
 
     <script>
-        let db;
+        let db = null; // Inicializada explícitamente en null
         let estadoTesis = {}; 
         let vistaActual = 'Tesis'; 
         const sqlConfig = { locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}` };
@@ -100,50 +99,60 @@
         // 1. INICIALIZAR EL MAPA 
         var map = L.map('map').setView([-38.0, -58.0], 5);
 
-        // 2. DEFINIR LOS MAPAS BASE (Sin errores de CORS/Referer)
-        var cartoVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
-        });
-
-        var esriOcean = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri Ocean'
-        });
-
-        var esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri Satellite'
-        });
+        // 2. DEFINIR LOS MAPAS BASE
+        var cartoVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: '&copy; OpenStreetMap contributors &copy; CARTO' });
+        var esriOcean = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri Ocean' });
+        var esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri Satellite' });
 
         // 3. ASIGNAR EL MAPA POR DEFECTO 
         cartoVoyager.addTo(map);
 
         // 4. CREAR EL CONTROL DE CAPAS 
-        var mapasFondo = {
-            "Mapa Urbano (CARTO)": cartoVoyager,
-            "Mapa Oceánico (Esri)": esriOcean,
-            "Satélite (Esri)": esriSatellite
-        };
+        var mapasFondo = { "Mapa Urbano (CARTO)": cartoVoyager, "Mapa Oceánico (Esri)": esriOcean, "Satélite (Esri)": esriSatellite };
         L.control.layers(mapasFondo, null, { position: 'bottomright' }).addTo(map);
 
-        // INICIO DE BASE DE DATOS
+        // 5. INICIO DE BASE DE DATOS (CON CARGA SEGURA)
         async function iniciar() {
             try {
+                document.getElementById('tesis-lista').innerHTML = "Descargando base de datos (tesis.db)...";
                 const SQL = await initSqlJs(sqlConfig);
-                const buf = await (await fetch('data/tesis.db')).arrayBuffer();
+                
+                const response = await fetch('data/tesis.db');
+                if (!response.ok) {
+                    throw new Error("No se encontró el archivo 'data/tesis.db'. Verifica que la carpeta 'data' exista.");
+                }
+
+                const buf = await response.arrayBuffer();
                 db = new SQL.Database(new Uint8Array(buf));
-                actualizarFiltrosYLista();
+                
+                // Habilitar los selects solo cuando la BD cargó
+                document.getElementById('filter-anio').disabled = false;
+                document.getElementById('filter-sector').disabled = false;
                 document.getElementById('filter-anio').onchange = consultarDatos;
                 document.getElementById('filter-sector').onchange = consultarDatos;
+
+                actualizarFiltrosYLista();
+
             } catch (err) {
-                document.getElementById('tesis-lista').innerHTML = "Error BD: Asegúrate de estar usando Live Server o servidor web.";
+                // Mostrar error claro en la pantalla
+                document.getElementById('tesis-lista').innerHTML = `
+                    <div style="color: red; background: #ffebeb; padding: 15px; border-radius: 5px; border: 1px solid red;">
+                        <b>Error Crítico:</b><br>${err.message}<br><br>
+                        <i>Recuerda: Si estás abriendo el archivo con doble clic, el navegador bloquea la base de datos por seguridad. Usa "Live Server" en VS Code o súbelo a GitHub Pages.</i>
+                    </div>`;
+                console.error(err);
             }
         }
 
+        // FUNCIONES DE UI Y CONSULTAS (Protegidas contra db null)
         function cambiarVista(tipo) {
+            if (!db) return; // Protección: no hacer nada si no hay BD
             vistaActual = tipo;
             document.getElementById('tab-tesis').classList.remove('active');
             document.getElementById('tab-inv').classList.remove('active');
             if(tipo === 'Tesis') document.getElementById('tab-tesis').classList.add('active');
             if(tipo === 'Investigacion') document.getElementById('tab-inv').classList.add('active');
+            
             for (let id in estadoTesis) { map.removeLayer(estadoTesis[id]); }
             estadoTesis = {};
             cerrarLector();
@@ -151,37 +160,46 @@
         }
 
         function actualizarFiltrosYLista() {
+            if (!db) return; // Protección
             poblarFiltros(); 
             consultarDatos();
         }
 
         function poblarFiltros() {
-            const qAnios = `SELECT DISTINCT anio FROM investigaciones WHERE tipo = '${vistaActual}' ORDER BY anio DESC`;
-            const qSectores = `SELECT DISTINCT sector FROM investigaciones WHERE tipo = '${vistaActual}' ORDER BY sector ASC`;
+            if (!db) return; // Protección
             try {
+                const qAnios = `SELECT DISTINCT anio FROM investigaciones WHERE tipo = '${vistaActual}' ORDER BY anio DESC`;
+                const qSectores = `SELECT DISTINCT sector FROM investigaciones WHERE tipo = '${vistaActual}' ORDER BY sector ASC`;
+                
                 const anios = db.exec(qAnios);
                 const sectores = db.exec(qSectores);
+                
                 const fill = (el, res, def) => {
                     el.innerHTML = `<option value="">${def}</option>`;
                     if(res.length > 0) res[0].values.forEach(v => el.add(new Option(v[0], v[0])));
                 };
+                
                 fill(document.getElementById('filter-anio'), anios, "Todos los años");
                 fill(document.getElementById('filter-sector'), sectores, "Todos los sectores");
             } catch(e) {
-                console.warn("Columna 'tipo' faltante, usando fallback.");
+                console.warn("Error al poblar filtros o falta la columna 'tipo'.", e);
             }
         }
 
         function consultarDatos() {
+            if (!db) return; // Protección total
             const anio = document.getElementById('filter-anio').value;
             const sector = document.getElementById('filter-sector').value;
-            let q = `SELECT * FROM investigaciones WHERE tipo = '${vistaActual}'`;
-            if(anio) q += ` AND anio = ${anio}`;
-            if(sector) q += ` AND sector = '${sector}'`;
+            
             try {
+                let q = `SELECT * FROM investigaciones WHERE tipo = '${vistaActual}'`;
+                if(anio) q += ` AND anio = ${anio}`;
+                if(sector) q += ` AND sector = '${sector}'`;
+                
                 const res = db.exec(q);
                 renderLista(res.length > 0 ? res[0] : null);
             } catch(e) {
+                // Fallback si la columna 'tipo' aún no se creó en la BD del usuario
                 let qFallback = "SELECT * FROM investigaciones WHERE 1=1";
                 if(anio) qFallback += ` AND anio = ${anio}`;
                 if(sector) qFallback += ` AND sector = '${sector}'`;
@@ -194,7 +212,7 @@
             const contenedor = document.getElementById('tesis-lista');
             contenedor.innerHTML = '';
             if(!data) { 
-                contenedor.innerHTML = `<div style="padding: 20px; text-align: center; color: #666;">No hay datos cargados para esta sección.</div>`; 
+                contenedor.innerHTML = `<div style="padding: 20px; text-align: center; color: #666;">No hay datos cargados en esta sección.</div>`; 
                 return; 
             }
             const columnas = data.columns;
@@ -313,6 +331,9 @@
         }
 
         function cerrarLector() { document.getElementById('reader-panel').classList.remove('open'); }
+
+        // ARRANCAR EL SISTEMA
+        iniciar();
     </script>
 </body>
 </html>
