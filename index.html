@@ -16,173 +16,50 @@
             --gold: #f1c40f;
             --light-grey: #f4f7f6;
             --text-dark: #2c3e50;
+            --panel-bg: #ffffff;
         }
 
-        body {
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden;
-            background-color: var(--light-grey);
-        }
+        body { margin: 0; display: flex; flex-direction: column; height: 100vh; font-family: 'Segoe UI', sans-serif; background-color: var(--light-grey); overflow: hidden; }
+        header { background: var(--navy); color: white; padding: 10px 20px; border-bottom: 4px solid var(--gold); z-index: 1100; display: flex; justify-content: space-between; align-items: center; }
+        #main-layout { display: flex; flex: 1; position: relative; overflow: hidden; }
+        
+        /* SIDEBAR Y TABS */
+        #sidebar { width: 350px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; z-index: 1000; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
+        .tabs { display: flex; background: var(--navy); border-bottom: 2px solid var(--gold); }
+        .tab-btn { flex: 1; padding: 12px 5px; background: transparent; border: none; color: white; cursor: pointer; opacity: 0.6; font-weight: bold; transition: 0.3s; font-size: 13px; }
+        .tab-btn:hover { opacity: 0.8; }
+        .tab-btn.active { opacity: 1; background: rgba(255,255,255,0.1); border-bottom: 4px solid var(--gold); }
 
-        header {
-            background: var(--navy);
-            color: white;
-            padding: 10px 20px;
-            border-bottom: 4px solid var(--gold);
-            z-index: 1100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .filter-section { padding: 15px; background: #eef2f5; border-bottom: 1px solid #ddd; }
+        .filter-section label { font-size: 12px; font-weight: bold; color: var(--navy); }
+        .filter-section select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        
+        #tesis-lista { flex: 1; overflow-y: auto; padding: 15px; }
+        .tesis-card { background: white; border: 1px solid #eee; border-radius: 6px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; border-left: 4px solid var(--navy); }
+        .tesis-card:hover { border-color: var(--gold); background: #fffdf5; border-left: 4px solid var(--gold); }
+        .tesis-card h4 { margin: 0 0 5px 0; font-size: 13px; color: var(--navy); }
+        .btn-read { font-size: 11px; color: var(--navy); text-decoration: underline; font-weight: bold; margin-top: 5px; display: inline-block; }
 
-        #main-layout {
-            display: flex;
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
+        /* MAPA Y CONTROL DE CAPAS */
+        #map { flex: 1; z-index: 1; }
+        .leaflet-control-layers { border: 2px solid var(--navy) !important; border-radius: 5px !important; font-family: 'Segoe UI', sans-serif; color: var(--navy); }
 
-        /* SIDEBAR IZQUIERDO: Filtros y Lista */
-        #sidebar {
-            width: 350px;
-            background: white;
-            border-right: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-        }
+        /* PANEL LECTOR */
+        #reader-panel { width: 0; background: var(--panel-bg); border-left: 1px solid #ddd; overflow-y: auto; transition: width 0.4s ease; z-index: 1050; display: flex; flex-direction: column; }
+        #reader-panel.open { width: 500px; }
+        .reader-content { padding: 30px; color: var(--text-dark); line-height: 1.6; }
+        .reader-header { border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px; }
+        .reader-header h2 { margin: 0; color: var(--navy); font-size: 20px; }
+        .reader-meta { font-size: 13px; color: #666; margin-top: 5px; }
+        .reader-text { font-size: 15px; text-align: justify; white-space: pre-wrap; }
+        .close-reader { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: var(--navy); font-weight: bold; }
+        .btn-repo-large { display: block; margin-top: 20px; padding: 12px; background: var(--navy); color: white; text-align: center; text-decoration: none; border-radius: 5px; font-weight: bold; }
 
-        .filter-section {
-            padding: 15px;
-            background: var(--navy);
-            color: white;
-        }
-
-        .filter-section select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            border: none;
-        }
-
-        #tesis-lista {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .tesis-card {
-            background: white;
-            border: 1px solid #eee;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .tesis-card:hover {
-            border-color: var(--gold);
-            background: #fffdf5;
-        }
-
-        .tesis-card h4 {
-            margin: 0 0 5px 0;
-            font-size: 13px;
-            color: var(--navy);
-        }
-
-        /* MAPA CENTRAL */
-        #map {
-            flex: 1;
-            z-index: 1;
-        }
-
-        /* PANEL DERECHO: MODO LECTOR (ESTILO WIKIPEDIA / RMARKDOWN) */
-        #reader-panel {
-            width: 0; /* Cerrado por defecto */
-            background: white;
-            border-left: 1px solid #ddd;
-            overflow-y: auto;
-            transition: width 0.4s ease;
-            z-index: 1050;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #reader-panel.open {
-            width: 500px; /* Tamaño del panel de lectura */
-        }
-
-        .reader-content {
-            padding: 40px;
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-
-        .reader-header {
-            border-bottom: 2px solid var(--gold);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-        }
-
-        .reader-header h2 {
-            margin: 0;
-            color: var(--navy);
-            font-size: 22px;
-        }
-
-        .reader-meta {
-            font-size: 14px;
-            color: #666;
-            margin-top: 10px;
-        }
-
-        .reader-text {
-            font-size: 16px;
-            text-align: justify;
-            white-space: pre-wrap; /* Mantiene saltos de línea de la DB */
-        }
-
-        .close-reader {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--navy);
-            font-weight: bold;
-        }
-
-        .btn-repo-large {
-            display: block;
-            margin-top: 30px;
-            padding: 12px;
-            background: var(--navy);
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-
-        /* Botón pequeño en card */
-        .btn-read {
-            font-size: 11px;
-            color: var(--navy);
-            text-decoration: underline;
-            font-weight: bold;
-            margin-top: 5px;
-            display: inline-block;
-        }
-
+        /* GESTOR DE CAPAS INTERNO */
+        .layer-manager { background: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .layer-manager h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--navy); border-bottom: 1px solid #ddd; padding-bottom: 5px;}
+        .sublayer-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
+        .sublayer-item input { margin-right: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -193,165 +70,249 @@
     </header>
 
     <div id="main-layout">
-        <!-- IZQUIERDA: LISTA -->
         <aside id="sidebar">
-            <div class="filter-section">
-                <label>Año de publicación:</label>
-                <select id="filter-anio"><option value="">Cargando...</option></select>
-                <label>Área de estudio:</label>
-                <select id="filter-sector"><option value="">Cargando...</option></select>
+            <div class="tabs">
+                <button class="tab-btn active" id="tab-tesis" onclick="cambiarVista('Tesis')">🎓 TESIS</button>
+                <button class="tab-btn" id="tab-inv" onclick="cambiarVista('Investigacion')">🔬 INVESTIGACIONES</button>
             </div>
-            <div id="tesis-lista">Iniciando base de datos...</div>
+
+            <div class="filter-section">
+                <label>Año de publicación:</label><select id="filter-anio"><option value="">Cargando...</option></select>
+                <label>Área de estudio:</label><select id="filter-sector"><option value="">Cargando...</option></select>
+            </div>
+            <div id="tesis-lista">Iniciando motor de base de datos...</div>
         </aside>
 
-        <!-- CENTRO: MAPA -->
         <div id="map"></div>
 
-        <!-- DERECHA: MODO LECTOR -->
         <div id="reader-panel">
             <span class="close-reader" onclick="cerrarLector()">&times;</span>
-            <div class="reader-content" id="reader-content">
-                <!-- Se llena dinámicamente -->
-            </div>
+            <div class="reader-content" id="reader-content"></div>
         </div>
     </div>
 
     <script>
         let db;
-        let capasActivas = {};
+        let estadoTesis = {}; 
+        let vistaActual = 'Tesis'; 
         const sqlConfig = { locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}` };
 
-        // 1. Inicializar Mapa
+        // 1. INICIALIZAR EL MAPA 
         var map = L.map('map').setView([-38.0, -58.0], 5);
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri'
-        }).addTo(map);
 
-        // 2. Iniciar Motor SQL y Cargar DB
+        // 2. DEFINIR LOS MAPAS BASE (Sin errores de CORS/Referer)
+        var cartoVoyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+        });
+
+        var esriOcean = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri Ocean'
+        });
+
+        var esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri Satellite'
+        });
+
+        // 3. ASIGNAR EL MAPA POR DEFECTO 
+        cartoVoyager.addTo(map);
+
+        // 4. CREAR EL CONTROL DE CAPAS 
+        var mapasFondo = {
+            "Mapa Urbano (CARTO)": cartoVoyager,
+            "Mapa Oceánico (Esri)": esriOcean,
+            "Satélite (Esri)": esriSatellite
+        };
+        L.control.layers(mapasFondo, null, { position: 'bottomright' }).addTo(map);
+
+        // INICIO DE BASE DE DATOS
         async function iniciar() {
             try {
                 const SQL = await initSqlJs(sqlConfig);
-                const dataPromise = await fetch('data/tesis.db');
-                const buf = await dataPromise.arrayBuffer();
+                const buf = await (await fetch('data/tesis.db')).arrayBuffer();
                 db = new SQL.Database(new Uint8Array(buf));
-                
-                poblarFiltros();
-                consultarTesis();
-
-                document.getElementById('filter-anio').onchange = consultarTesis;
-                document.getElementById('filter-sector').onchange = consultarTesis;
+                actualizarFiltrosYLista();
+                document.getElementById('filter-anio').onchange = consultarDatos;
+                document.getElementById('filter-sector').onchange = consultarDatos;
             } catch (err) {
-                document.getElementById('tesis-lista').innerHTML = "Error: " + err.message;
+                document.getElementById('tesis-lista').innerHTML = "Error BD: Asegúrate de estar usando Live Server o servidor web.";
             }
         }
 
-        function poblarFiltros() {
-            const anios = db.exec("SELECT DISTINCT anio FROM investigaciones ORDER BY anio DESC");
-            const sectores = db.exec("SELECT DISTINCT sector FROM investigaciones ORDER BY sector ASC");
-            
-            const selAnio = document.getElementById('filter-anio');
-            const selSector = document.getElementById('filter-sector');
-            
-            selAnio.innerHTML = '<option value="">Todos los años</option>';
-            anios[0].values.forEach(v => selAnio.add(new Option(v[0], v[0])));
-
-            selSector.innerHTML = '<option value="">Todos los sectores</option>';
-            sectores[0].values.forEach(v => selSector.add(new Option(v[0], v[0])));
+        function cambiarVista(tipo) {
+            vistaActual = tipo;
+            document.getElementById('tab-tesis').classList.remove('active');
+            document.getElementById('tab-inv').classList.remove('active');
+            if(tipo === 'Tesis') document.getElementById('tab-tesis').classList.add('active');
+            if(tipo === 'Investigacion') document.getElementById('tab-inv').classList.add('active');
+            for (let id in estadoTesis) { map.removeLayer(estadoTesis[id]); }
+            estadoTesis = {};
+            cerrarLector();
+            actualizarFiltrosYLista();
         }
 
-        function consultarTesis() {
+        function actualizarFiltrosYLista() {
+            poblarFiltros(); 
+            consultarDatos();
+        }
+
+        function poblarFiltros() {
+            const qAnios = `SELECT DISTINCT anio FROM investigaciones WHERE tipo = '${vistaActual}' ORDER BY anio DESC`;
+            const qSectores = `SELECT DISTINCT sector FROM investigaciones WHERE tipo = '${vistaActual}' ORDER BY sector ASC`;
+            try {
+                const anios = db.exec(qAnios);
+                const sectores = db.exec(qSectores);
+                const fill = (el, res, def) => {
+                    el.innerHTML = `<option value="">${def}</option>`;
+                    if(res.length > 0) res[0].values.forEach(v => el.add(new Option(v[0], v[0])));
+                };
+                fill(document.getElementById('filter-anio'), anios, "Todos los años");
+                fill(document.getElementById('filter-sector'), sectores, "Todos los sectores");
+            } catch(e) {
+                console.warn("Columna 'tipo' faltante, usando fallback.");
+            }
+        }
+
+        function consultarDatos() {
             const anio = document.getElementById('filter-anio').value;
             const sector = document.getElementById('filter-sector').value;
-            let q = "SELECT * FROM investigaciones WHERE 1=1";
+            let q = `SELECT * FROM investigaciones WHERE tipo = '${vistaActual}'`;
             if(anio) q += ` AND anio = ${anio}`;
             if(sector) q += ` AND sector = '${sector}'`;
-            const res = db.exec(q);
-            renderLista(res.length > 0 ? res[0] : null);
+            try {
+                const res = db.exec(q);
+                renderLista(res.length > 0 ? res[0] : null);
+            } catch(e) {
+                let qFallback = "SELECT * FROM investigaciones WHERE 1=1";
+                if(anio) qFallback += ` AND anio = ${anio}`;
+                if(sector) qFallback += ` AND sector = '${sector}'`;
+                const res = db.exec(qFallback);
+                renderLista(res.length > 0 ? res[0] : null);
+            }
         }
 
         function renderLista(data) {
             const contenedor = document.getElementById('tesis-lista');
             contenedor.innerHTML = '';
-            if(!data) { contenedor.innerHTML = "Sin resultados."; return; }
-
+            if(!data) { 
+                contenedor.innerHTML = `<div style="padding: 20px; text-align: center; color: #666;">No hay datos cargados para esta sección.</div>`; 
+                return; 
+            }
             const columnas = data.columns;
             data.values.forEach(fila => {
-                const t = {};
-                columnas.forEach((col, i) => t[col] = fila[i]);
-
+                const t = {}; columnas.forEach((col, i) => t[col] = fila[i]);
                 const card = document.createElement('div');
                 card.className = 'tesis-card';
                 card.innerHTML = `
-                    <h4><input type="checkbox" id="chk-${t.id}" ${capasActivas[t.id] ? 'checked' : ''}> ${t.titulo}</h4>
+                    <h4><input type="checkbox" id="chk-tesis-${t.id}" ${estadoTesis[t.id] ? 'checked' : ''}> ${t.titulo}</h4>
                     <div style="font-size:11px; color:#666;">${t.autor} (${t.anio})</div>
-                    <span class="btn-read">Leer Introducción y Ver Mapa ➔</span>
+                    <span class="btn-read">Configurar Capas y Leer ➔</span>
                 `;
-
-                // Checkbox: Maneja solo el mapa
-                card.querySelector('input').onchange = (e) => {
-                    e.stopPropagation();
-                    manejarCapa(e.target.checked, t);
-                };
-
-                // Clic en Card: Abre el Lector
+                card.querySelector('input').onchange = (e) => { e.stopPropagation(); toggleTesisPrincipal(e.target.checked, t); };
                 card.onclick = () => abrirLector(t);
-
                 contenedor.appendChild(card);
             });
         }
 
-        function abrirLector(t) {
-            const panel = document.getElementById('reader-panel');
-            const content = document.getElementById('reader-content');
-            
-            panel.classList.add('open');
-            
-            content.innerHTML = `
-                <div class="reader-header">
-                    <h2>${t.titulo}</h2>
-                    <div class="reader-meta">
-                        <strong>Autor:</strong> ${t.autor}<br>
-                        <strong>Año:</strong> ${t.anio} | <strong>Sector:</strong> ${t.sector}
-                    </div>
-                </div>
-                <div class="reader-text">
-                    <h3>Introducción</h3>
-                    ${t.resena}
-                </div>
-                <a href="${t.url}" target="_blank" class="btn-repo-large">📂 Acceder al Repositorio Oficial (CefaDigital)</a>
-            `;
-
-            // Si tiene geometría, mostrarla automáticamente al leer
-            manejarCapa(true, t);
-            // Marcar el checkbox visualmente
-            const chk = document.getElementById(`chk-${t.id}`);
-            if(chk) chk.checked = true;
+        function parsearGeoJSON(geojsonStr) {
+            if(!geojsonStr) return [];
+            try {
+                let data = JSON.parse(geojsonStr);
+                if(!Array.isArray(data)) return [{ id_subcapa: "main", nombre: "Geometría Principal", tipo: "poligono", visible_por_defecto: true, datos: data }];
+                return data;
+            } catch(e) { return []; }
         }
 
-        function cerrarLector() {
-            document.getElementById('reader-panel').classList.remove('open');
-        }
-
-        function manejarCapa(visible, t) {
-            if (visible) {
-                if (capasActivas[t.id]) return; // Ya está en el mapa
-                try {
-                    const capa = L.geoJSON(JSON.parse(t.geojson), {
-                        style: { color: '#ff7800', weight: 3, fillOpacity: 0.4 }
-                    }).addTo(map);
-                    capa.bindPopup(`<b>${t.titulo}</b>`);
-                    capasActivas[t.id] = capa;
-                    map.fitBounds(capa.getBounds(), { padding: [50, 50] });
-                } catch (e) { console.error("Error GeoJSON", e); }
+        function crearCapaLeaflet(subcapa, nombreTesis) {
+            const opciones = {
+                onEachFeature: function(feature, layer) {
+                    let html = `<div style="font-family: Arial; color: var(--navy); max-width: 250px;">`;
+                    html += `<b style="font-size: 14px;">${subcapa.nombre}</b><br><span style="font-size:10px; color:#666;">${nombreTesis}</span><hr style="border: 0.5px solid #ccc; margin: 5px 0;">`;
+                    if (feature.properties && Object.keys(feature.properties).length > 0) {
+                        for (const [key, value] of Object.entries(feature.properties)) {
+                            if(value && key !== "style") html += `<b style="font-size:11px;">${key}:</b> <span style="font-size:11px;">${value}</span><br>`;
+                        }
+                    } else { html += `<i>Sin atributos adicionales.</i>`; }
+                    html += `</div>`;
+                    layer.bindPopup(html);
+                }
+            };
+            if(subcapa.tipo === 'puntos') {
+                opciones.pointToLayer = function(feature, latlng) {
+                    return L.circleMarker(latlng, { radius: 7, fillColor: "var(--gold)", color: "var(--navy)", weight: 2, opacity: 1, fillOpacity: 0.9 });
+                };
             } else {
-                if (capasActivas[t.id]) {
-                    map.removeLayer(capasActivas[t.id]);
-                    delete capasActivas[t.id];
+                opciones.style = { color: '#ff7800', weight: 3, fillOpacity: 0.4 };
+            }
+            const capaL = L.geoJSON(subcapa.datos, opciones);
+            capaL.customId = subcapa.id_subcapa; 
+            return capaL;
+        }
+
+        function toggleTesisPrincipal(encender, t) {
+            if(encender) {
+                if(!estadoTesis[t.id]) estadoTesis[t.id] = L.featureGroup().addTo(map);
+                const subcapas = parsearGeoJSON(t.geojson);
+                subcapas.forEach(sub => { if(sub.visible_por_defecto) toggleSubCapa(t.id, sub, t.titulo, true); });
+                if(estadoTesis[t.id].getLayers().length > 0) map.fitBounds(estadoTesis[t.id].getBounds(), { padding: [30,30] });
+            } else {
+                if(estadoTesis[t.id]) { map.removeLayer(estadoTesis[t.id]); delete estadoTesis[t.id]; }
+                document.querySelectorAll(`.subchk-${t.id}`).forEach(chk => chk.checked = false);
+            }
+        }
+
+        function toggleSubCapa(tesisId, subcapaDef, tituloTesis, encender) {
+            if(!estadoTesis[tesisId]) { estadoTesis[tesisId] = L.featureGroup().addTo(map); document.getElementById(`chk-tesis-${tesisId}`).checked = true; }
+            const grupo = estadoTesis[tesisId];
+            if(encender) {
+                let existe = false;
+                grupo.eachLayer(l => { if(l.customId === subcapaDef.id_subcapa) existe = true; });
+                if(!existe) {
+                    const nuevaCapa = crearCapaLeaflet(subcapaDef, tituloTesis);
+                    grupo.addLayer(nuevaCapa);
+                    map.fitBounds(nuevaCapa.getBounds());
+                }
+            } else {
+                grupo.eachLayer(l => { if(l.customId === subcapaDef.id_subcapa) grupo.removeLayer(l); });
+                if(grupo.getLayers().length === 0) {
+                    map.removeLayer(grupo); delete estadoTesis[tesisId];
+                    const chkMain = document.getElementById(`chk-tesis-${tesisId}`);
+                    if(chkMain) chkMain.checked = false;
                 }
             }
         }
 
-        iniciar();
+        function abrirLector(t) {
+            const subcapas = parsearGeoJSON(t.geojson);
+            let htmlCapas = '';
+            if(subcapas.length > 0) {
+                htmlCapas = `<div class="layer-manager"><h3>Capas y Datos del Documento</h3>`;
+                subcapas.forEach(sub => {
+                    let activa = false;
+                    if(estadoTesis[t.id]) { estadoTesis[t.id].eachLayer(l => { if(l.customId === sub.id_subcapa) activa = true; }); }
+                    htmlCapas += `<div class="sublayer-item"><input type="checkbox" class="subchk-${t.id}" id="chk-${t.id}-${sub.id_subcapa}" ${activa ? 'checked' : ''}><label for="chk-${t.id}-${sub.id_subcapa}">${sub.nombre}</label></div>`;
+                });
+                htmlCapas += `</div>`;
+            }
+            document.getElementById('reader-content').innerHTML = `
+                <div class="reader-header"><h2>${t.titulo}</h2><div class="reader-meta"><strong>Autor:</strong> ${t.autor}<br><strong>Año:</strong> ${t.anio} | <strong>Sector:</strong> ${t.sector}</div></div>
+                ${htmlCapas}
+                <div class="reader-text"><h3>Resumen Técnico</h3>${t.resena}</div>
+                <a href="${t.url}" target="_blank" class="btn-repo-large">📂 Ver Documento Original en CefaDigital</a>`;
+            document.getElementById('reader-panel').classList.add('open');
+
+            subcapas.forEach(sub => {
+                const chk = document.getElementById(`chk-${t.id}-${sub.id_subcapa}`);
+                if(chk) chk.onchange = (e) => toggleSubCapa(t.id, sub, t.titulo, e.target.checked);
+            });
+
+            if(!estadoTesis[t.id] && subcapas.length > 0) {
+                document.getElementById(`chk-tesis-${t.id}`).checked = true;
+                toggleTesisPrincipal(true, t);
+                subcapas.forEach(sub => { if(sub.visible_por_defecto) { const chk = document.getElementById(`chk-${t.id}-${sub.id_subcapa}`); if(chk) chk.checked = true; }});
+            }
+        }
+
+        function cerrarLector() { document.getElementById('reader-panel').classList.remove('open'); }
     </script>
 </body>
 </html>
