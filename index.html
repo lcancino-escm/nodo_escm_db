@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDE ESCM - Portal de Investigaciones</title>
+    <title>IDE ESCM - Nodo IDERA Universidades</title>
 
     <!-- RECURSOS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -19,69 +20,279 @@
             --panel-bg: #ffffff;
         }
 
-        body { margin: 0; display: flex; flex-direction: column; height: 100vh; font-family: 'Segoe UI', sans-serif; background-color: var(--light-grey); overflow: hidden; }
-        header { background: var(--navy); color: white; padding: 10px 20px; border-bottom: 4px solid var(--gold); z-index: 1100; display: flex; justify-content: space-between; align-items: center; }
-        #main-layout { display: flex; flex: 1; position: relative; overflow: hidden; }
-        
-        /* SIDEBAR Y TABS */
-        #sidebar { width: 350px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; z-index: 1000; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
-        .tabs { display: flex; background: var(--navy); border-bottom: 2px solid var(--gold); }
-        .tab-btn { flex: 1; padding: 12px 5px; background: transparent; border: none; color: white; cursor: pointer; opacity: 0.6; font-weight: bold; transition: 0.3s; font-size: 13px; }
-        .tab-btn:hover { opacity: 0.8; }
-        .tab-btn.active { opacity: 1; background: rgba(255,255,255,0.1); border-bottom: 4px solid var(--gold); }
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--light-grey);
+            overflow: hidden;
+        }
 
-        .filter-section { padding: 15px; background: #eef2f5; border-bottom: 1px solid #ddd; }
-        .filter-section label { font-size: 12px; font-weight: bold; color: var(--navy); }
-        .filter-section select { width: 100%; padding: 8px; margin-top: 5px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc; }
-        
-        #tesis-lista { flex: 1; overflow-y: auto; padding: 15px; }
-        .tesis-card { background: white; border: 1px solid #eee; border-radius: 6px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; border-left: 4px solid var(--navy); }
-        .tesis-card:hover { border-color: var(--gold); background: #fffdf5; border-left: 4px solid var(--gold); }
-        .tesis-card h4 { margin: 0 0 5px 0; font-size: 13px; color: var(--navy); }
-        .btn-read { font-size: 11px; color: var(--navy); text-decoration: underline; font-weight: bold; margin-top: 5px; display: inline-block; }
+        header {
+            background: var(--navy);
+            color: white;
+            padding: 10px 20px;
+            border-bottom: 4px solid var(--gold);
+            z-index: 1100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #main-layout {
+            display: flex;
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR Y TABS */
+        #sidebar {
+            width: 350px;
+            background: white;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--navy);
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 5px;
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            opacity: 0.6;
+            font-weight: bold;
+            transition: 0.3s;
+            font-size: 13px;
+        }
+
+        .tab-btn:hover {
+            opacity: 0.8;
+        }
+
+        .tab-btn.active {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 4px solid var(--gold);
+        }
+
+        .filter-section {
+            padding: 15px;
+            background: #eef2f5;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .filter-section label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--navy);
+        }
+
+        .filter-section select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        #tesis-lista {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .tesis-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            border-left: 4px solid var(--navy);
+        }
+
+        .tesis-card:hover {
+            border-color: var(--gold);
+            background: #fffdf5;
+            border-left: 4px solid var(--gold);
+        }
+
+        .tesis-card h4 {
+            margin: 0 0 5px 0;
+            font-size: 13px;
+            color: var(--navy);
+        }
+
+        .btn-read {
+            font-size: 11px;
+            color: var(--navy);
+            text-decoration: underline;
+            font-weight: bold;
+            margin-top: 5px;
+            display: inline-block;
+        }
 
         /* MAPA Y CONTROL DE CAPAS */
-        #map { flex: 1; z-index: 1; }
-        .leaflet-control-layers { border: 2px solid var(--navy) !important; border-radius: 5px !important; font-family: 'Segoe UI', sans-serif; color: var(--navy); }
+        #map {
+            flex: 1;
+            z-index: 1;
+        }
 
-        /* PANEL LECTOR */
-        #reader-panel { width: 0; background: var(--panel-bg); border-left: 1px solid #ddd; overflow-y: auto; transition: width 0.4s ease; z-index: 1050; display: flex; flex-direction: column; }
-        #reader-panel.open { width: 500px; }
-        .reader-content { padding: 30px; color: var(--text-dark); line-height: 1.6; }
-        .reader-header { border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px; }
-        .reader-header h2 { margin: 0; color: var(--navy); font-size: 20px; }
-        .reader-meta { font-size: 13px; color: #666; margin-top: 5px; }
-        .reader-text { font-size: 14px; text-align: justify; white-space: pre-wrap; }
-        .close-reader { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: var(--navy); font-weight: bold; }
-        .btn-repo-large { display: block; margin-top: 20px; padding: 12px; background: var(--navy); color: white; text-align: center; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .leaflet-control-layers {
+            border: 2px solid var(--navy) !important;
+            border-radius: 5px !important;
+            font-family: 'Segoe UI', sans-serif;
+            color: var(--navy);
+        }
 
-        .layer-manager { background: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-        .layer-manager h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--navy); border-bottom: 1px solid #ddd; padding-bottom: 5px;}
-        .sublayer-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 14px; }
-        .sublayer-item input { margin-right: 10px; cursor: pointer; }
+        /* PANEL LECTOR MEJORADO (Estilo Académico) */
+        #reader-panel {
+            width: 0;
+            background: var(--panel-bg);
+            border-left: 1px solid #ddd;
+            overflow-y: auto;
+            transition: width 0.4s ease;
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #reader-panel.open {
+            width: 500px;
+        }
+
+        .reader-content {
+            padding: 30px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .reader-header {
+            border-bottom: 2px solid var(--gold);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        .reader-header h2 {
+            margin: 0;
+            color: var(--navy);
+            font-size: 20px;
+        }
+
+        .reader-meta {
+            font-size: 13px;
+            color: #444;
+            margin-top: 15px;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+
+        .reader-meta strong {
+            color: var(--navy);
+        }
+
+        .reader-text {
+            font-size: 14px;
+            text-align: justify;
+            white-space: pre-wrap;
+            margin-top: 15px;
+        }
+
+        .close-reader {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--navy);
+            font-weight: bold;
+        }
+
+        .btn-repo-large {
+            display: block;
+            margin-top: 20px;
+            padding: 12px;
+            background: var(--navy);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .layer-manager {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .layer-manager h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--navy);
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        .sublayer-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .sublayer-item input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
+
 <body>
 
     <header>
-        <div><strong>IDE ESCM</strong> | Nodo de Investigaciones Científicas</div>
+        <div><strong>IDE ESCM</strong> | Nodo de IDERA Universitario e Investigaciones Científicas</div>
         <div style="font-size: 12px;">Escuela de Ciencias del Mar</div>
     </header>
 
     <div id="main-layout">
         <aside id="sidebar">
             <div class="tabs">
-                <button class="tab-btn active" id="tab-tesis" onclick="cambiarVista('Tesis')">🎓 TESIS</button>
-                <button class="tab-btn" id="tab-inv" onclick="cambiarVista('Investigacion')">🔬 INVESTIGACIONES (TFI)</button>
+                <button class="tab-btn active" id="tab-tesis" onclick="cambiarVista('Tesis')">🎓 TESINAS</button>
+                <button class="tab-btn" id="tab-inv" onclick="cambiarVista('Investigacion')">🔬 Trabajos Finales Integradores (TFI)</button>
             </div>
 
             <div class="filter-section">
                 <label>Año de publicación:</label>
-                <select id="filter-anio" disabled><option value="">Esperando BD...</option></select>
-                <label id="lbl-sector">Área de estudio:</label>
-                <select id="filter-sector" disabled><option value="">Esperando BD...</option></select>
+                <select id="filter-anio" disabled>
+                    <option value="">Esperando BD...</option>
+                </select>
+                <label id="lbl-filtro">Colección académica:</label>
+                <select id="filter-coleccion" disabled>
+                    <option value="">Esperando BD...</option>
+                </select>
             </div>
-            <div id="tesis-lista" style="padding:20px; font-weight:bold; color:var(--navy);">Iniciando motores de base de datos...</div>
+            <div id="tesis-lista" style="padding:20px; font-weight:bold; color:var(--navy);">Iniciando motores de base
+                de datos...</div>
         </aside>
 
         <div id="map"></div>
@@ -95,8 +306,8 @@
     <script>
         let dbTesis = null;
         let dbInv = null;
-        let estadoTesis = {}; 
-        let vistaActual = 'Tesis'; 
+        let estadoTesis = {};
+        let vistaActual = 'Tesis';
         const sqlConfig = { locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/${file}` };
 
         // 1. INICIALIZAR MAPA Y CAPAS BASE
@@ -106,31 +317,29 @@
         var esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri' });
 
         cartoVoyager.addTo(map);
-        L.control.layers({"Mapa Urbano (CARTO)": cartoVoyager, "Mapa Oceánico (Esri)": esriOcean, "Satélite (Esri)": esriSatellite}, null, { position: 'bottomright' }).addTo(map);
+        L.control.layers({ "Mapa Urbano (CARTO)": cartoVoyager, "Mapa Oceánico (Esri)": esriOcean, "Satélite (Esri)": esriSatellite }, null, { position: 'bottomright' }).addTo(map);
 
         // 2. CARGA DUAL DE BASES DE DATOS
         async function iniciar() {
             try {
                 const SQL = await initSqlJs(sqlConfig);
-                
-                // Cargar DB Tesis
+
                 try {
                     const resTesis = await fetch('data/tesis.db');
                     if (resTesis.ok) dbTesis = new SQL.Database(new Uint8Array(await resTesis.arrayBuffer()));
-                } catch(e) { console.warn("No se pudo cargar tesis.db"); }
+                } catch (e) { console.warn("No se pudo cargar tesis.db"); }
 
-                // Cargar DB Investigaciones (TFI)
                 try {
                     const resInv = await fetch('data/investigaciones.db');
                     if (resInv.ok) dbInv = new SQL.Database(new Uint8Array(await resInv.arrayBuffer()));
-                } catch(e) { console.warn("No se pudo cargar investigaciones.db"); }
+                } catch (e) { console.warn("No se pudo cargar investigaciones.db"); }
 
                 if (!dbTesis && !dbInv) throw new Error("No se encontró ninguna base de datos en la carpeta 'data/'.");
 
                 document.getElementById('filter-anio').disabled = false;
-                document.getElementById('filter-sector').disabled = false;
+                document.getElementById('filter-coleccion').disabled = false;
                 document.getElementById('filter-anio').onchange = consultarDatos;
-                document.getElementById('filter-sector').onchange = consultarDatos;
+                document.getElementById('filter-coleccion').onchange = consultarDatos;
 
                 actualizarFiltrosYLista();
             } catch (err) {
@@ -138,12 +347,12 @@
             }
         }
 
-        // CONTROLADOR DE CONTEXTO (Magia para manejar las 2 bases de datos transparentemente)
+        // CONTROLADOR DE CONTEXTO NORMALIZADO (CEFA Digital)
         function getContextoActual() {
             if (vistaActual === 'Tesis') {
-                return { db: dbTesis, tabla: 'investigaciones', colFiltro: 'sector', colTexto: 'resena', lblFiltro: 'Área de estudio:' };
+                return { db: dbTesis, tabla: 'tesinas' };
             } else {
-                return { db: dbInv, tabla: 'tfi', colFiltro: 'coleccion', colTexto: 'resumen', lblFiltro: 'Colección:' };
+                return { db: dbInv, tabla: 'tfi' };
             }
         }
 
@@ -151,9 +360,9 @@
             vistaActual = tipo;
             document.getElementById('tab-tesis').classList.remove('active');
             document.getElementById('tab-inv').classList.remove('active');
-            if(tipo === 'Tesis') document.getElementById('tab-tesis').classList.add('active');
-            if(tipo === 'Investigacion') document.getElementById('tab-inv').classList.add('active');
-            
+            if (tipo === 'Tesis') document.getElementById('tab-tesis').classList.add('active');
+            if (tipo === 'Investigacion') document.getElementById('tab-inv').classList.add('active');
+
             for (let id in estadoTesis) { map.removeLayer(estadoTesis[id]); }
             estadoTesis = {};
             cerrarLector();
@@ -162,8 +371,6 @@
 
         function actualizarFiltrosYLista() {
             const ctx = getContextoActual();
-            document.getElementById('lbl-sector').innerText = ctx.lblFiltro;
-
             if (!ctx.db) {
                 document.getElementById('tesis-lista').innerHTML = `<div style="padding:20px; color:#666;">Falta el archivo de base de datos para esta sección.</div>`;
                 return;
@@ -171,16 +378,16 @@
 
             try {
                 const anios = ctx.db.exec(`SELECT DISTINCT anio FROM ${ctx.tabla} ORDER BY anio DESC`);
-                const sectores = ctx.db.exec(`SELECT DISTINCT ${ctx.colFiltro} FROM ${ctx.tabla} ORDER BY ${ctx.colFiltro} ASC`);
-                
+                const colecciones = ctx.db.exec(`SELECT DISTINCT coleccion FROM ${ctx.tabla} ORDER BY coleccion ASC`);
+
                 const fill = (el, res, def) => {
                     el.innerHTML = `<option value="">${def}</option>`;
-                    if(res.length > 0) res[0].values.forEach(v => el.add(new Option(v[0], v[0])));
+                    if (res.length > 0) res[0].values.forEach(v => el.add(new Option(v[0], v[0])));
                 };
                 fill(document.getElementById('filter-anio'), anios, "Todos los años");
-                fill(document.getElementById('filter-sector'), sectores, "Todas las categorías");
-            } catch(e) { console.error("Error leyendo BD", e); }
-            
+                fill(document.getElementById('filter-coleccion'), colecciones, "Todas las colecciones");
+            } catch (e) { console.error("Error leyendo BD", e); }
+
             consultarDatos();
         }
 
@@ -189,23 +396,23 @@
             if (!ctx.db) return;
 
             const anio = document.getElementById('filter-anio').value;
-            const sector = document.getElementById('filter-sector').value;
-            
+            const coleccion = document.getElementById('filter-coleccion').value;
+
             let q = `SELECT * FROM ${ctx.tabla} WHERE 1=1`;
-            if(anio) q += ` AND anio = ${anio}`;
-            if(sector) q += ` AND ${ctx.colFiltro} = '${sector}'`;
-            
+            if (anio) q += ` AND anio = ${anio}`;
+            if (coleccion) q += ` AND coleccion = '${coleccion}'`;
+
             try {
                 const res = ctx.db.exec(q);
                 renderLista(res.length > 0 ? res[0] : null);
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         function renderLista(data) {
             const contenedor = document.getElementById('tesis-lista');
             contenedor.innerHTML = '';
-            if(!data) { contenedor.innerHTML = `<div style="padding: 20px; text-align: center; color: #666;">No hay datos que coincidan con la búsqueda.</div>`; return; }
-            
+            if (!data) { contenedor.innerHTML = `<div style="padding: 20px; text-align: center; color: #666;">No hay datos que coincidan con la búsqueda.</div>`; return; }
+
             const columnas = data.columns;
             data.values.forEach(fila => {
                 const t = {}; columnas.forEach((col, i) => t[col] = fila[i]);
@@ -223,101 +430,110 @@
         }
 
         function parsearGeoJSON(geojsonStr) {
-            if(!geojsonStr) return [];
+            if (!geojsonStr) return [];
             try {
                 let data = JSON.parse(geojsonStr);
-                if(!Array.isArray(data)) return [{ id_subcapa: "main", nombre: "Geometría Principal", tipo: "poligono", visible_por_defecto: true, datos: data }];
+                if (!Array.isArray(data)) return [{ id_subcapa: "main", nombre: "Geometría Principal", tipo: "poligono", visible_por_defecto: true, datos: data }];
                 return data;
-            } catch(e) { return []; }
+            } catch (e) { return []; }
         }
 
         function crearCapaLeaflet(subcapa, nombreTesis) {
             const opciones = {
-                onEachFeature: function(feature, layer) {
+                onEachFeature: function (feature, layer) {
                     let html = `<div style="font-family: Arial; color: var(--navy); max-width: 250px;">`;
                     html += `<b style="font-size: 14px;">${subcapa.nombre}</b><br><span style="font-size:10px; color:#666;">${nombreTesis}</span><hr style="border: 0.5px solid #ccc; margin: 5px 0;">`;
                     if (feature.properties && Object.keys(feature.properties).length > 0) {
                         for (const [key, value] of Object.entries(feature.properties)) {
-                            if(value && key !== "style") html += `<b style="font-size:11px;">${key}:</b> <span style="font-size:11px;">${value}</span><br>`;
+                            if (value && key !== "style") html += `<b style="font-size:11px;">${key}:</b> <span style="font-size:11px;">${value}</span><br>`;
                         }
                     } else { html += `<i>Sin atributos adicionales.</i>`; }
                     html += `</div>`;
                     layer.bindPopup(html);
                 }
             };
-            if(subcapa.tipo === 'puntos') {
-                opciones.pointToLayer = function(feature, latlng) { return L.circleMarker(latlng, { radius: 7, fillColor: "var(--gold)", color: "var(--navy)", weight: 2, opacity: 1, fillOpacity: 0.9 }); };
+            if (subcapa.tipo === 'puntos') {
+                opciones.pointToLayer = function (feature, latlng) { return L.circleMarker(latlng, { radius: 7, fillColor: "var(--gold)", color: "var(--navy)", weight: 2, opacity: 1, fillOpacity: 0.9 }); };
             } else {
                 opciones.style = { color: '#ff7800', weight: 3, fillOpacity: 0.4 };
             }
             const capaL = L.geoJSON(subcapa.datos, opciones);
-            capaL.customId = subcapa.id_subcapa; 
+            capaL.customId = subcapa.id_subcapa;
             return capaL;
         }
 
         function toggleTesisPrincipal(encender, t) {
-            if(encender) {
-                if(!estadoTesis[t.id]) estadoTesis[t.id] = L.featureGroup().addTo(map);
+            if (encender) {
+                if (!estadoTesis[t.id]) estadoTesis[t.id] = L.featureGroup().addTo(map);
                 const subcapas = parsearGeoJSON(t.geojson);
-                subcapas.forEach(sub => { if(sub.visible_por_defecto) toggleSubCapa(t.id, sub, t.titulo, true); });
-                if(estadoTesis[t.id].getLayers().length > 0) map.fitBounds(estadoTesis[t.id].getBounds(), { padding: [30,30] });
+                subcapas.forEach(sub => { if (sub.visible_por_defecto) toggleSubCapa(t.id, sub, t.titulo, true); });
+                if (estadoTesis[t.id].getLayers().length > 0) map.fitBounds(estadoTesis[t.id].getBounds(), { padding: [30, 30] });
             } else {
-                if(estadoTesis[t.id]) { map.removeLayer(estadoTesis[t.id]); delete estadoTesis[t.id]; }
+                if (estadoTesis[t.id]) { map.removeLayer(estadoTesis[t.id]); delete estadoTesis[t.id]; }
                 document.querySelectorAll(`.subchk-${t.id}`).forEach(chk => chk.checked = false);
             }
         }
 
         function toggleSubCapa(tesisId, subcapaDef, tituloTesis, encender) {
-            if(!estadoTesis[tesisId]) { estadoTesis[tesisId] = L.featureGroup().addTo(map); document.getElementById(`chk-tesis-${tesisId}`).checked = true; }
+            if (!estadoTesis[tesisId]) { estadoTesis[tesisId] = L.featureGroup().addTo(map); document.getElementById(`chk-tesis-${tesisId}`).checked = true; }
             const grupo = estadoTesis[tesisId];
-            if(encender) {
+            if (encender) {
                 let existe = false;
-                grupo.eachLayer(l => { if(l.customId === subcapaDef.id_subcapa) existe = true; });
-                if(!existe) {
+                grupo.eachLayer(l => { if (l.customId === subcapaDef.id_subcapa) existe = true; });
+                if (!existe) {
                     const nuevaCapa = crearCapaLeaflet(subcapaDef, tituloTesis);
                     grupo.addLayer(nuevaCapa);
                     map.fitBounds(nuevaCapa.getBounds());
                 }
             } else {
-                grupo.eachLayer(l => { if(l.customId === subcapaDef.id_subcapa) grupo.removeLayer(l); });
-                if(grupo.getLayers().length === 0) { map.removeLayer(grupo); delete estadoTesis[tesisId]; document.getElementById(`chk-tesis-${tesisId}`).checked = false; }
+                grupo.eachLayer(l => { if (l.customId === subcapaDef.id_subcapa) grupo.removeLayer(l); });
+                if (grupo.getLayers().length === 0) { map.removeLayer(grupo); delete estadoTesis[tesisId]; document.getElementById(`chk-tesis-${tesisId}`).checked = false; }
             }
         }
 
         function abrirLector(t) {
-            const ctx = getContextoActual();
             const subcapas = parsearGeoJSON(t.geojson);
             let htmlCapas = '';
-            if(subcapas.length > 0) {
-                htmlCapas = `<div class="layer-manager"><h3>Capas y Datos del Documento</h3>`;
+            if (subcapas.length > 0) {
+                htmlCapas = `<div class="layer-manager"><h3>Capas y Datos Espaciales</h3>`;
                 subcapas.forEach(sub => {
                     let activa = false;
-                    if(estadoTesis[t.id]) { estadoTesis[t.id].eachLayer(l => { if(l.customId === sub.id_subcapa) activa = true; }); }
+                    if (estadoTesis[t.id]) { estadoTesis[t.id].eachLayer(l => { if (l.customId === sub.id_subcapa) activa = true; }); }
                     htmlCapas += `<div class="sublayer-item"><input type="checkbox" class="subchk-${t.id}" id="chk-${t.id}-${sub.id_subcapa}" ${activa ? 'checked' : ''}><label for="chk-${t.id}-${sub.id_subcapa}">${sub.nombre}</label></div>`;
                 });
                 htmlCapas += `</div>`;
             }
 
-            // Construir metadatos dinámicamente según si es Tesis o TFI
-            let metaHtml = `<strong>Autor:</strong> ${t.autor}<br><strong>Año:</strong> ${t.anio}`;
-            if(vistaActual === 'Investigacion') {
-                metaHtml += ` | <strong>Colección:</strong> ${t.coleccion}<br><br><strong>Palabras Clave:</strong> <i>${t.palabras_clave}</i><br><br><strong>Descripción:</strong> ${t.descripcion}`;
-            } else {
-                metaHtml += ` | <strong>Sector:</strong> ${t.sector}`;
-            }
+            // RECUADRO DE METADATOS ESTILO CEFA DIGITAL
+            let metaHtml = `
+                <strong>Autor:</strong> ${t.autor} <br>
+                <strong>Editorial:</strong> ${t.editorial || 'Escuela de Ciencias del Mar. UNDEF'} <br>
+                <strong>Colección:</strong> ${t.coleccion} <br>
+                <strong>Citación:</strong> <i>${t.citacion}</i> <br>
+                <hr style="border: 0.5px solid #ddd; margin: 10px 0;">
+                <strong>Palabras Clave:</strong> ${t.palabras_clave} <br>
+                <strong>Descripción / Fichero:</strong> ${t.descripcion}
+            `;
 
             document.getElementById('reader-content').innerHTML = `
-                <div class="reader-header"><h2>${t.titulo}</h2><div class="reader-meta" style="line-height:1.4;">${metaHtml}</div></div>
+                <div class="reader-header">
+                    <h2>${t.titulo}</h2>
+                    <div class="reader-meta" style="line-height:1.6;">${metaHtml}</div>
+                </div>
                 ${htmlCapas}
-                <div class="reader-text"><h3>${vistaActual === 'Tesis' ? 'Resumen Técnico' : 'Resumen'}</h3>${t[ctx.colTexto]}</div>
-                <a href="${t.url}" target="_blank" class="btn-repo-large">📂 Ver Documento Original en CefaDigital</a>`;
-            
+                <div class="reader-text"><h3>Resumen</h3>${t.resumen}</div>
+                <a href="${t.url}" target="_blank" class="btn-repo-large">📂 URI: Acceder al Repositorio Oficial CEFA</a>`;
+
             document.getElementById('reader-panel').classList.add('open');
 
-            subcapas.forEach(sub => { const chk = document.getElementById(`chk-${t.id}-${sub.id_subcapa}`); if(chk) chk.onchange = (e) => toggleSubCapa(t.id, sub, t.titulo, e.target.checked); });
-            if(!estadoTesis[t.id] && subcapas.length > 0) {
+            subcapas.forEach(sub => {
+                const chk = document.getElementById(`chk-${t.id}-${sub.id_subcapa}`);
+                if (chk) chk.onchange = (e) => toggleSubCapa(t.id, sub, t.titulo, e.target.checked);
+            });
+
+            if (!estadoTesis[t.id] && subcapas.length > 0) {
                 document.getElementById(`chk-tesis-${t.id}`).checked = true; toggleTesisPrincipal(true, t);
-                subcapas.forEach(sub => { if(sub.visible_por_defecto) { const chk = document.getElementById(`chk-${t.id}-${sub.id_subcapa}`); if(chk) chk.checked = true; }});
+                subcapas.forEach(sub => { if (sub.visible_por_defecto) { const chk = document.getElementById(`chk-${t.id}-${sub.id_subcapa}`); if (chk) chk.checked = true; } });
             }
         }
 
@@ -326,4 +542,5 @@
         iniciar();
     </script>
 </body>
+
 </html>
